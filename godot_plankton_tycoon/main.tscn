@@ -1,0 +1,350 @@
+[gd_scene load_steps=34 format=3 uid="uid://c3x3k"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" path="res://player.gd" id="2_player"]
+
+[sub_resource type="VoxelGeneratorFlat" id="VoxelGeneratorFlat_1"]
+voxel_type = 1
+
+[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_player"]
+size = Vector3(1.2, 1.5, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+size = Vector3(1, 0.6, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crab"]
+albedo_color = Color(1, 0.388235, 0.278431, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eye"]
+size = Vector3(0.2, 0.2, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye"]
+albedo_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fart"]
+albedo_color = Color(0.486275, 0.988235, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fart"]
+material = SubResource("StandardMaterial3D_fart")
+size = Vector3(0.2, 0.2, 0.2)
+
+[sub_resource type="Curve" id="Curve_fart"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_desk"]
+size = Vector3(2, 0.8, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_desk"]
+size = Vector3(2, 0.8, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_desk"]
+albedo_color = Color(0.4, 0.2, 0.05, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pc"]
+size = Vector3(0.6, 0.4, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pc"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cooler"]
+size = Vector3(0.6, 1.5, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cooler"]
+size = Vector3(0.6, 1.0, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cooler"]
+albedo_color = Color(0.8, 0.8, 0.8, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_water"]
+size = Vector3(0.4, 0.5, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_water"]
+albedo_color = Color(0.3, 0.7, 1, 0.8)
+transparency = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fridge"]
+size = Vector3(1.2, 2, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fridge"]
+size = Vector3(1.2, 2, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fridge"]
+albedo_color = Color(0.9, 0.9, 0.95, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_window"]
+size = Vector3(3, 2, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_window"]
+size = Vector3(3, 2, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_window"]
+albedo_color = Color(0.5, 0.8, 1, 0.5)
+transparency = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(50, 1, 50)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.707107, -0.408248, 0.57735, 0, 0.816497, 0.57735, -0.707107, -0.408248, 0.57735, 10, 15, 10)
+projection = 1
+size = 15.0
+
+[node name="VoxelTerrain" type="VoxelTerrain" parent="."]
+generator = SubResource("VoxelGeneratorFlat_1")
+mesher = SubResource("VoxelMesherBlocky_1")
+generate_collisions = false
+
+[node name="StaticFloor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticFloor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Desk" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Desk"]
+shape = SubResource("BoxShape3D_desk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Desk"]
+mesh = SubResource("BoxMesh_desk")
+surface_material_override/0 = SubResource("StandardMaterial3D_desk")
+
+[node name="Computer" type="MeshInstance3D" parent="Desk"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.2)
+mesh = SubResource("BoxMesh_pc")
+surface_material_override/0 = SubResource("StandardMaterial3D_pc")
+
+[node name="Cooler" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.75, -2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cooler"]
+shape = SubResource("BoxShape3D_cooler")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cooler"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+mesh = SubResource("BoxMesh_cooler")
+surface_material_override/0 = SubResource("StandardMaterial3D_cooler")
+
+[node name="Water" type="MeshInstance3D" parent="Cooler"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_water")
+surface_material_override/0 = SubResource("StandardMaterial3D_water")
+
+[node name="Fridge" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.0, -2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fridge"]
+shape = SubResource("BoxShape3D_fridge")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Fridge"]
+mesh = SubResource("BoxMesh_fridge")
+surface_material_override/0 = SubResource("StandardMaterial3D_fridge")
+
+[node name="Window" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 3)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Window"]
+shape = SubResource("BoxShape3D_window")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Window"]
+mesh = SubResource("BoxMesh_window")
+surface_material_override/0 = SubResource("StandardMaterial3D_window")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+input_ray_pickable = true
+script = ExtResource("2_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("BoxShape3D_player")
+
+[node name="Body" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("BoxMesh_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_crab")
+
+[node name="EyeL" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.4, 0.3)
+mesh = SubResource("BoxMesh_eye")
+surface_material_override/0 = SubResource("StandardMaterial3D_eye")
+
+[node name="EyeR" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.4, 0.3)
+mesh = SubResource("BoxMesh_eye")
+surface_material_override/0 = SubResource("StandardMaterial3D_eye")
+
+[node name="FartParticles" type="CPUParticles3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)
+emitting = false
+amount = 15
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("BoxMesh_fart")
+direction = Vector3(0, 0, -1)
+spread = 45.0
+gravity = Vector3(0, 1, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+scale_amount_curve = SubResource("Curve_fart")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="MarginContainer" type="MarginContainer" parent="UI"]
+offset_right = 350.0
+offset_bottom = 300.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ScoreLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+text = "ОЧКИ: 0"
+
+[node name="StatusLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "СТАТУС: ОЖИДАНИЕ ЗАДАЧИ"
+
+[node name="TaskProgress" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="Hunger" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Hunger"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Голод:"
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Hunger"]
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+value = 100.0
+
+[node name="Burnout" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Burnout"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Выгорание:"
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Burnout"]
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+
+[node name="Dushnota" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Dushnota"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Душнота:"
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Dushnota"]
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+
+[node name="SuperSkill" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/SuperSkill"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "НАВЫК:"
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/SuperSkill"]
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+
+[node name="ControlButtons" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Eat" type="Button" parent="UI/MarginContainer/VBoxContainer/ControlButtons"]
+layout_mode = 2
+text = "ПОЕСТЬ"
+
+[node name="Drink" type="Button" parent="UI/MarginContainer/VBoxContainer/ControlButtons"]
+layout_mode = 2
+text = "КОФЕ"
+
+[node name="Vent" type="Button" parent="UI/MarginContainer/VBoxContainer/ControlButtons"]
+layout_mode = 2
+text = "ОКНО"
+
+[node name="KanbanBtn" type="Button" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 1, 0.435294, 1)
+text = "ОТКРЫТЬ КАНБАН"
+
+[node name="KanbanBoard" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.180392, 0.180392, 0.180392, 0.901961)
+
+[node name="VBox" type="VBoxContainer" parent="UI/KanbanBoard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/KanbanBoard/VBox"]
+layout_mode = 2
+text = "ВЫБЕРИТЕ ЗАДАЧУ"
+horizontal_alignment = 1
+
+[node name="Task1" type="Button" parent="UI/KanbanBoard/VBox"]
+layout_mode = 2
+text = "Починить кнопку Васи"
+
+[node name="Task2" type="Button" parent="UI/KanbanBoard/VBox"]
+layout_mode = 2
+text = "Удалить легаси (и уронить прод)"
+
+[node name="Task3" type="Button" parent="UI/KanbanBoard/VBox"]
+layout_mode = 2
+text = "Созвон на 3 часа без повестки"
+
+[node name="Close" type="Button" parent="UI/KanbanBoard/VBox"]
+layout_mode = 2
+text = "ЗАКРЫТЬ"
+
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/ControlButtons/Eat" to="." method="_on_eat_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/ControlButtons/Drink" to="." method="_on_drink_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/ControlButtons/Vent" to="." method="_on_vent_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/KanbanBtn" to="." method="_on_open_kanban_pressed"]
+[connection signal="pressed" from="UI/KanbanBoard/VBox/Task1" to="." method="_on_task_selected" binds= ["Починить кнопку Васи"]]
+[connection signal="pressed" from="UI/KanbanBoard/VBox/Task2" to="." method="_on_task_selected" binds= ["Удалить легаси"]]
+[connection signal="pressed" from="UI/KanbanBoard/VBox/Task3" to="." method="_on_task_selected" binds= ["Созвон на 3 часа"]]
+[connection signal="pressed" from="UI/KanbanBoard/VBox/Close" to="." method="_on_close_kanban_pressed"]
