@@ -51,12 +51,19 @@ var last_mouse_pos = Vector2.ZERO
 
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			camera.size = clamp(camera.size - 1.0, 4.0, 30.0)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			camera.size = clamp(camera.size + 1.0, 4.0, 30.0)
+		
 		if event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_MIDDLE or event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				dragging_camera = true
 				last_mouse_pos = event.position
 			else:
 				dragging_camera = false
+	elif event is InputEventMagnifyGesture:
+		camera.size = clamp(camera.size / event.factor, 4.0, 30.0)
 	elif event is InputEventMouseMotion and dragging_camera:
 		var delta_pos = event.position - last_mouse_pos
 		last_mouse_pos = event.position
