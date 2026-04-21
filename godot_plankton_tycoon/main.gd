@@ -12,6 +12,8 @@ extends Node3D
 @onready var super_bar = $UI/MarginContainer/VBoxContainer/SuperSkill/ProgressBar
 @onready var super_label = $UI/MarginContainer/VBoxContainer/SuperSkill/Label
 
+var npc_scene = preload("res://npc.tscn")
+
 func _ready():
 	kanban_ui.hide()
 	task_progress_bar.hide()
@@ -21,6 +23,17 @@ func _ready():
 		"Fart": super_label.text = "ГАЗЫ:"
 		"Alcoholic": super_label.text = "СОНЛИВОСТЬ:"
 		"Sarcasm": super_label.text = "САРКАЗМ:"
+		
+	# Спавним других NPC и рабочие места
+	for i in range(15):
+		var new_npc = npc_scene.instantiate()
+		new_npc.position = Vector3(randf_range(-20, 20), 0.5, randf_range(-20, 20))
+		add_child(new_npc)
+		
+		var new_desk = desk.duplicate()
+		new_desk.position = Vector3(randf_range(-20, 20), 0.4, randf_range(-20, 20))
+		new_desk.rotation_degrees.y = randf_range(0, 360)
+		add_child(new_desk)
 
 @onready var desk = $Desk
 @onready var cooler = $Cooler
