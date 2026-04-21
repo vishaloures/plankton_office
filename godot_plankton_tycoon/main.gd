@@ -32,6 +32,32 @@ func _ready():
 @onready var btn_drink = $UI/MarginContainer/VBoxContainer/ControlButtons/Drink
 @onready var btn_vent = $UI/MarginContainer/VBoxContainer/ControlButtons/Vent
 
+@onready var camera = $Camera3D
+var dragging_camera = false
+var last_mouse_pos = Vector2.ZERO
+
+func _unhandled_input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_MIDDLE or event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				dragging_camera = true
+				last_mouse_pos = event.position
+			else:
+				dragging_camera = false
+	elif event is InputEventMouseMotion and dragging_camera:
+		var delta_pos = event.position - last_mouse_pos
+		last_mouse_pos = event.position
+		
+		var right = camera.global_transform.basis.x
+		right.y = 0
+		right = right.normalized()
+		
+		var forward = -camera.global_transform.basis.z
+		forward.y = 0
+		forward = forward.normalized()
+		
+		camera.global_position -= (right * delta_pos.x + forward * delta_pos.y) * 0.02
+
 func _process(_delta):
 	hunger_bar.value = player.hunger
 	burnout_bar.value = player.burnout
