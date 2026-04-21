@@ -1,6 +1,6 @@
 # 🦀 Подводный Офисный Tycoon (Voxel Edition)
 
-MVP симулятора выживания в суровых реалиях подводного офиса. Игра выполнена в воксельном (Voxel) 3D-стиле и разрабатывается на движке **Godot Engine 4.3** с использованием модуля **godot_voxel**.
+MVP симулятора выживания в суровых реалиях подводного офиса. Игра выполнена в воксельном (Voxel) 3D-стиле и разрабатывается на движке **Godot Engine 4.6** с использованием модуля **godot_voxel**.
 
 ![Status](https://img.shields.io/badge/Status-MVP-green.svg)
 ![Engine](https://img.shields.io/badge/Engine-Godot_4.6-blue.svg)
@@ -64,10 +64,11 @@ chmod +x setup_godot_mac.sh
 
 ## 📂 Структура проекта
 * `cjm.md` — Детальное описание пользовательского пути и механик.
-* `design_system.md` — Описание визуального стиля (Voxel Rules, палитра).
+* `README.md` — Основной файл описания проекта.
 * `setup_godot_mac.sh` — Установщик 3D-движка для macOS.
 * `godot_plankton_tycoon/` — **Основной 3D проект на Godot**.
   * `global.gd` — Глобальное хранилище данных (Autoload).
   * `menu.tscn` / `menu.gd` — Сцена стартового меню и создания персонажа.
   * `main.tscn` / `main.gd` — Основная игровая 3D сцена (Офис) и UI менеджер.
   * `player.gd` — Скрипт контроллера, потребностей, движения и анимаций персонажа.
+  * `project.godot` — Файл конфигурации проекта Godot.
