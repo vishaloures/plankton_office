@@ -24,7 +24,54 @@ func _ready():
 		"Alcoholic": super_label.text = "СОНЛИВОСТЬ:"
 		"Sarcasm": super_label.text = "САРКАЗМ:"
 		
-	# Спавним других NPC и рабочие места
+	# Делаем песчаный воксельный пол
+	var floor_mesh = MeshInstance3D.new()
+	var box_mesh = BoxMesh.new()
+	box_mesh.size = Vector3(50, 1, 50)
+	var sand_mat = StandardMaterial3D.new()
+	sand_mat.albedo_color = Color(0.85, 0.75, 0.55) # Цвет песка
+	box_mesh.surface_set_material(0, sand_mat)
+	floor_mesh.mesh = box_mesh
+	$StaticFloor.add_child(floor_mesh)
+
+	# Спавним воксельные водоросли и кораллы
+	for i in range(40):
+		var prop = MeshInstance3D.new()
+		var prop_mesh = BoxMesh.new()
+		var prop_mat = StandardMaterial3D.new()
+		if randf() > 0.3:
+			# Водоросли
+			prop_mesh.size = Vector3(0.5, randf_range(2.0, 6.0), 0.5)
+			prop_mat.albedo_color = Color(0.2, randf_range(0.6, 0.9), 0.3)
+		else:
+			# Кораллы
+			prop_mesh.size = Vector3(randf_range(1.0, 2.0), randf_range(1.0, 2.0), randf_range(1.0, 2.0))
+			prop_mat.albedo_color = Color(randf_range(0.8, 1.0), 0.3, randf_range(0.4, 0.8))
+		prop_mesh.surface_set_material(0, prop_mat)
+		prop.mesh = prop_mesh
+		prop.position = Vector3(randf_range(-24, 24), prop_mesh.size.y / 2, randf_range(-24, 24))
+		add_child(prop)
+		
+	# Спавним пузырьки
+	for i in range(5):
+		var bubbles = CPUParticles3D.new()
+		bubbles.amount = 20
+		bubbles.lifetime = 5.0
+		bubbles.direction = Vector3(0, 1, 0)
+		bubbles.spread = 15.0
+		bubbles.initial_velocity_min = 2.0
+		bubbles.initial_velocity_max = 5.0
+		var b_mesh = BoxMesh.new()
+		b_mesh.size = Vector3(0.1, 0.1, 0.1)
+		var b_mat = StandardMaterial3D.new()
+		b_mat.albedo_color = Color(0.8, 0.9, 1.0, 0.6)
+		b_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		b_mesh.surface_set_material(0, b_mat)
+		bubbles.mesh = b_mesh
+		bubbles.position = Vector3(randf_range(-20, 20), 0, randf_range(-20, 20))
+		add_child(bubbles)
+		
+	# Спавним других NPC и рабочие места с перегородками
 	for i in range(15):
 		var new_npc = npc_scene.instantiate()
 		new_npc.position = Vector3(randf_range(-20, 20), 0.5, randf_range(-20, 20))
@@ -33,6 +80,19 @@ func _ready():
 		var new_desk = desk.duplicate()
 		new_desk.position = Vector3(randf_range(-20, 20), 0.4, randf_range(-20, 20))
 		new_desk.rotation_degrees.y = randf_range(0, 360)
+		
+		# Офисная перегородка к столу
+		var partition = MeshInstance3D.new()
+		var part_mesh = BoxMesh.new()
+		part_mesh.size = Vector3(2.2, 1.5, 0.2)
+		var part_mat = StandardMaterial3D.new()
+		part_mat.albedo_color = Color(0.3, 0.5, 0.7, 0.8) # Синее стекло
+		part_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		part_mesh.surface_set_material(0, part_mat)
+		partition.mesh = part_mesh
+		partition.position = Vector3(0, 0.75, -0.6) # За столом
+		new_desk.add_child(partition)
+		
 		add_child(new_desk)
 
 @onready var desk = $Desk
