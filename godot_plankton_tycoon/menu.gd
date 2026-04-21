@@ -6,8 +6,15 @@ extends Control
 @onready var name_input = $VBoxContainer/NameBox/NameInput
 
 func _ready():
-	form_option.add_item("Краб (Клешни стучат быстрее)")
-	form_option.add_item("Планктон (Один глаз, но большой)")
+	form_option.clear()
+	form_option.add_item("Краб")
+	form_option.add_item("Планктон")
+	form_option.add_item("Осьминог")
+	form_option.add_item("Скат")
+	form_option.add_item("Кальмар")
+	form_option.add_item("Омар")
+	form_option.add_item("Морской конек")
+	form_option.add_item("Медуза")
 	
 	basic_option.add_item("Программист (Быстрый код, быстрое выгорание)")
 	basic_option.add_item("Менеджер (Медленно работает, мало ест)")
@@ -17,10 +24,16 @@ func _ready():
 	super_option.add_item("Сонный алкоголик (Внезапные приступы усталости)")
 	super_option.add_item("Токсичный сарказм (Быстро выгорает сам и бесит всех)")
 	
-	name_input.text = "Геннадий"
+	generate_funny_name()
+
+func generate_funny_name():
+	var first_names = ["Краб", "Планктон", "Осьминог", "Скат", "Кальмар", "Омар", "Морской конек", "Медуз"]
+	var last_names = ["Геннадий", "Валерий", "Олег", "Иннокентий", "Аркадий", "Борис", "Степан", "Эдуард"]
+	name_input.text = first_names[randi() % first_names.size()] + " " + last_names[randi() % last_names.size()]
 
 func _on_start_pressed():
-	Global.character_form = "Crab" if form_option.selected == 0 else "Plankton"
+	var forms = ["Crab", "Plankton", "Octopus", "Ray", "Squid", "Lobster", "SeaHorse", "Jellyfish"]
+	Global.character_form = forms[form_option.selected]
 	
 	match basic_option.selected:
 		0: Global.basic_skill = "Programmer"

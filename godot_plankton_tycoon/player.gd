@@ -8,6 +8,8 @@ const SPEED = 5.0
 var hunger: float = 100.0
 var burnout: float = 0.0
 var dushnota: float = 0.0
+var communication: float = 100.0
+var confidence: float = 100.0
 
 var is_working: bool = false
 var current_task_name: String = ""
@@ -40,8 +42,7 @@ func show_event_text(text: String, duration: float = 2.0):
 		tween.tween_callback(func(): event_label.text = "")
 
 func _ready():
-	if Global.character_form == "Plankton":
-		setup_plankton()
+	setup_form(Global.character_form)
 
 	if Global.basic_skill == "Programmer":
 		work_speed = 25.0
@@ -54,16 +55,42 @@ func _ready():
 		work_speed = 12.0
 		dushnota_rate = 8.0
 
-func setup_plankton():
-	var plankton_mat = StandardMaterial3D.new()
-	plankton_mat.albedo_color = Color(0.2, 0.8, 0.4)
-	var plankton_mesh = BoxMesh.new()
-	plankton_mesh.size = Vector3(0.5, 1.2, 0.5)
-	body_mesh.mesh = plankton_mesh
-	body_mesh.set_surface_override_material(0, plankton_mat)
-	eye_l.position = Vector3(0, 0.6, 0.26)
-	eye_l.scale = Vector3(1.5, 1.5, 1.5)
-	eye_r.hide()
+func setup_form(form_type: String):
+	var mat = StandardMaterial3D.new()
+	var b_mesh = BoxMesh.new()
+	
+	match form_type:
+		"Crab":
+			mat.albedo_color = Color(1, 0.38, 0.28) # Красный
+			b_mesh.size = Vector3(1, 0.6, 0.8)
+		"Plankton":
+			mat.albedo_color = Color(0.2, 0.8, 0.4) # Зеленый
+			b_mesh.size = Vector3(0.5, 1.2, 0.5)
+			eye_l.position = Vector3(0, 0.6, 0.26)
+			eye_l.scale = Vector3(1.5, 1.5, 1.5)
+			eye_r.hide()
+		"Octopus":
+			mat.albedo_color = Color(0.6, 0.3, 0.8) # Фиолетовый
+			b_mesh.size = Vector3(0.8, 1.0, 0.8)
+		"Ray":
+			mat.albedo_color = Color(0.3, 0.4, 0.6) # Синий
+			b_mesh.size = Vector3(1.8, 0.2, 1.2)
+		"Squid":
+			mat.albedo_color = Color(0.9, 0.5, 0.3) # Оранжевый
+			b_mesh.size = Vector3(0.6, 1.6, 0.6)
+		"Lobster":
+			mat.albedo_color = Color(0.8, 0.1, 0.1) # Темно-красный
+			b_mesh.size = Vector3(0.7, 0.5, 1.5)
+		"SeaHorse":
+			mat.albedo_color = Color(1.0, 0.8, 0.2) # Желтый
+			b_mesh.size = Vector3(0.4, 1.8, 0.6)
+		"Jellyfish":
+			mat.albedo_color = Color(0.8, 0.6, 1.0, 0.6) # Полупрозрачный
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			b_mesh.size = Vector3(1.0, 0.8, 1.0)
+
+	body_mesh.mesh = b_mesh
+	body_mesh.set_surface_override_material(0, mat)
 
 func _physics_process(delta: float):
 	if not super_skill_ready:
@@ -78,14 +105,17 @@ func _physics_process(delta: float):
 	elif not super_skill_ready:
 		hunger -= 0.5 * delta
 		burnout = max(0, burnout - 5.0 * delta)
-	
+		communication -= 1.0 * delta
+		confidence -= 0.3 * delta
+
 	hunger = clamp(hunger, 0, 100)
 	burnout = clamp(burnout, 0, 100)
 	dushnota = clamp(dushnota, 0, 100)
-	
-	if burnout >= 99 or hunger <= 1 or dushnota >= 99:
+	communication = clamp(communication, 0, 100)
+	confidence = clamp(confidence, 0, 100)
+
+	if burnout >= 99 or hunger <= 1 or dushnota <= 99 or confidence <= 1:
 		is_working = false
-	
 	# Движение (только если не работаем и не в приступе навыка)
 	if not is_working and not super_skill_ready:
 		var input_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -112,6 +142,7 @@ func work_on_task(delta):
 	burnout += burnout_rate * delta
 	hunger -= hunger_rate * delta
 	dushnota += dushnota_rate * delta
+	confidence -= 2.0 * delta # Работа подрывает уверенность!
 	
 	task_progress += work_speed * delta
 	
@@ -149,6 +180,21 @@ func complete_task():
 	task_progress = 0.0
 	is_working = false
 	show_event_text("Задача выполнена!")
+	celebrate()
+
+func celebrate():
+	var tween = create_tween()
+	tween.tween_property(self, "position:y", 1.5, 0.2).set_trans(Tween.TRANS_BOUNCE)
+	tween.tween_property(self, "position:y", 0.5, 0.2).set_trans(Tween.TRANS_BOUNCE)
+	tween.tween_property(self, "rotation_degrees:y", rotation_degrees.y + 360, 0.4)
+
+func pet_fish():
+	confidence = 100.0
+	show_event_text("Буль-буль! ❤️")
+
+func chat():
+	communication = 100.0
+	show_event_text("Бла-бла-бла...")
 
 func update_visuals():
 	var wobble = 0.0

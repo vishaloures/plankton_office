@@ -104,6 +104,6 @@ placeholder_text = "Введите имя"
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
-text = "ПОДПИСАТЬ ОФФЕР И НАЧАТЬ"
+text = "НАЧАТЬ"
 
 [connection signal="pressed" from="VBoxContainer/BtnStart" to="." method="_on_start_pressed"]

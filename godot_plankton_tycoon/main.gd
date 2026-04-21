@@ -4,6 +4,8 @@ extends Node3D
 @onready var hunger_bar = $UI/MarginContainer/VBoxContainer/Hunger/ProgressBar
 @onready var burnout_bar = $UI/MarginContainer/VBoxContainer/Burnout/ProgressBar
 @onready var dushnota_bar = $UI/MarginContainer/VBoxContainer/Dushnota/ProgressBar
+@onready var comm_bar = $UI/MarginContainer/VBoxContainer/Comm/ProgressBar
+@onready var conf_bar = $UI/MarginContainer/VBoxContainer/Conf/ProgressBar
 @onready var status_label = $UI/MarginContainer/VBoxContainer/StatusLabel
 @onready var kanban_ui = $UI/KanbanBoard
 @onready var task_progress_bar = $UI/MarginContainer/VBoxContainer/TaskProgress
@@ -76,18 +78,37 @@ func _ready():
 	
 	# Центральная зона отдыха
 	fridge.position = Vector3(-3, 1.0, 0)
-	cooler.position = Vector3(3, 0.75, 0)
+	fridge.input_ray_pickable = true
+	fridge.input_event.connect(_on_fridge_input_event)
 	
-	var coffee_machine = MeshInstance3D.new()
+	cooler.position = Vector3(3, 0.75, 0)
+	cooler.input_ray_pickable = true
+	cooler.input_event.connect(_on_cooler_input_event)
+	
+	var coffee_machine = StaticBody3D.new() # Сделаем StaticBody для кликов
 	coffee_machine.name = "CoffeeMachine"
+	var cm_mesh_inst = MeshInstance3D.new()
 	var cm_mesh = BoxMesh.new()
 	cm_mesh.size = Vector3(0.8, 1.2, 0.6)
 	var cm_mat = StandardMaterial3D.new()
 	cm_mat.albedo_color = Color(0.15, 0.15, 0.15)
-	cm_mesh.surface_set_material(0, cm_mat)
-	coffee_machine.mesh = cm_mesh
+	cm_mesh_inst.mesh = cm_mesh
+	cm_mesh_inst.set_surface_override_material(0, cm_mat)
+	coffee_machine.add_child(cm_mesh_inst)
+	
+	var cm_col = CollisionShape3D.new()
+	var cm_shape = BoxShape3D.new()
+	cm_shape.size = cm_mesh.size
+	cm_col.shape = cm_shape
+	coffee_machine.add_child(cm_col)
+	
 	coffee_machine.position = Vector3(0, 0.6, 2)
+	coffee_machine.input_ray_pickable = true
+	coffee_machine.input_event.connect(_on_cooler_input_event)
 	add_child(coffee_machine)
+	
+	voxel_fish.input_ray_pickable = true
+	voxel_fish.input_event.connect(_on_fish_input_event)
 
 	# Спавним столы по сетке
 	var desk_count = 0
@@ -109,6 +130,8 @@ func _ready():
 			
 			current_desk.position = Vector3(pos_x, 0.4, pos_z)
 			current_desk.rotation_degrees.y = [0, 90, 180, 270][randi() % 4]
+			current_desk.input_ray_pickable = true
+			current_desk.input_event.connect(_on_desk_input_event)
 			
 			# Офисная перегородка к столу
 			var partition = MeshInstance3D.new()
@@ -130,32 +153,41 @@ func _ready():
 
 	# Спавним окна по краям
 	window_mesh.position = Vector3(0, 1.5, -24)
+	window_mesh.input_ray_pickable = true
+	window_mesh.input_event.connect(_on_window_input_event)
+	
 	for i in range(-20, 21, 10):
 		if i != 0:
 			var w_north = window_mesh.duplicate()
 			w_north.position = Vector3(i, 1.5, -24)
+			w_north.input_event.connect(_on_window_input_event)
 			add_child(w_north)
 		var w_south = window_mesh.duplicate()
 		w_south.position = Vector3(i, 1.5, 24)
+		w_south.input_event.connect(_on_window_input_event)
 		add_child(w_south)
 		var w_east = window_mesh.duplicate()
 		w_east.position = Vector3(24, 1.5, i)
 		w_east.rotation_degrees.y = 90
+		w_east.input_event.connect(_on_window_input_event)
 		add_child(w_east)
 		var w_west = window_mesh.duplicate()
 		w_west.position = Vector3(-24, 1.5, i)
 		w_west.rotation_degrees.y = 90
+		w_west.input_event.connect(_on_window_input_event)
 		add_child(w_west)
 
 @onready var desk = $Desk
 @onready var cooler = $Cooler
 @onready var fridge = $Fridge
 @onready var window_mesh = $Window
+@onready var voxel_fish = $VoxelFish
 
 @onready var btn_kanban = $UI/MarginContainer/VBoxContainer/KanbanBtn
 @onready var btn_eat = $UI/MarginContainer/VBoxContainer/ControlButtons/Eat
 @onready var btn_drink = $UI/MarginContainer/VBoxContainer/ControlButtons/Drink
 @onready var btn_vent = $UI/MarginContainer/VBoxContainer/ControlButtons/Vent
+@onready var btn_pet = $UI/MarginContainer/VBoxContainer/ControlButtons/PetFish
 
 @onready var camera = $Camera3D
 var dragging_camera = false
@@ -194,6 +226,8 @@ func _process(_delta):
 	hunger_bar.value = player.hunger
 	burnout_bar.value = player.burnout
 	dushnota_bar.value = player.dushnota
+	comm_bar.value = player.communication
+	conf_bar.value = player.confidence
 	score_label.text = "ОЧКИ: " + str(player.score)
 	
 	# Обновляем прогресс навыка
@@ -211,7 +245,7 @@ func _process(_delta):
 	elif player.super_skill_ready:
 		status_label.text = "ЖМИ НА ПЕРСОНАЖА!"
 		status_label.modulate = Color.ORANGE
-	elif player.is_working == false and (player.burnout >= 99 or player.hunger <= 1 or player.dushnota >= 99):
+	elif player.is_working == false and (player.burnout >= 99 or player.hunger <= 1 or player.dushnota >= 99 or player.confidence <= 1):
 		task_progress_bar.hide()
 		status_label.text = Global.character_name + " - СТАТУС: В ПАНИКЕ!"
 		status_label.modulate = Color.RED
@@ -239,6 +273,9 @@ func _process(_delta):
 	for w in get_tree().get_nodes_in_group("windows"):
 		dist_window = min(dist_window, player.global_position.distance_to(w.global_position))
 	btn_vent.disabled = dist_window > 3.0
+	
+	var dist_fish = player.global_position.distance_to(voxel_fish.global_position)
+	btn_pet.disabled = dist_fish > 3.0
 
 # --- Кнопки интерфейса ---
 func _on_eat_pressed():
@@ -249,6 +286,30 @@ func _on_drink_pressed():
 
 func _on_vent_pressed():
 	player.vent()
+
+func _on_pet_fish_pressed():
+	player.pet_fish()
+
+# --- Обработчики кликов по 3D объектам ---
+func _on_fridge_input_event(_camera, event, _position, _normal, _shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not btn_eat.disabled: _on_eat_pressed()
+
+func _on_cooler_input_event(_camera, event, _position, _normal, _shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not btn_drink.disabled: _on_drink_pressed()
+
+func _on_fish_input_event(_camera, event, _position, _normal, _shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not btn_pet.disabled: _on_pet_fish_pressed()
+
+func _on_window_input_event(_camera, event, _position, _normal, _shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not btn_vent.disabled: _on_vent_pressed()
+
+func _on_desk_input_event(_camera, event, _position, _normal, _shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not btn_kanban.disabled: _on_open_kanban_pressed()
 
 # --- Логика Канбана ---
 func _on_open_kanban_pressed():

@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://c3x3k"]
+[gd_scene load_steps=38 format=3 uid="uid://c3x3k"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_main"]
 [ext_resource type="Script" path="res://player.gd" id="2_player"]
@@ -110,6 +110,9 @@ transparency = 1
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(50, 1, 50)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_fish"]
+size = Vector3(0.5, 0.5, 0.5)
+
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
 
@@ -188,6 +191,15 @@ shape = SubResource("BoxShape3D_window")
 mesh = SubResource("BoxMesh_window")
 surface_material_override/0 = SubResource("StandardMaterial3D_window")
 
+[node name="VoxelFish" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.8, 2)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="VoxelFish"]
+mesh = SubResource("BoxMesh_fart")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VoxelFish"]
+shape = SubResource("BoxShape3D_fish")
+
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 input_ray_pickable = true
@@ -262,9 +274,9 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Hunger"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
-text = "Голод:"
+text = "🍕 Голод:"
 
 [node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Hunger"]
 custom_minimum_size = Vector2(150, 20)
@@ -275,9 +287,9 @@ value = 100.0
 layout_mode = 2
 
 [node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Burnout"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
-text = "Выгорание:"
+text = "🔥 Выгорание:"
 
 [node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Burnout"]
 custom_minimum_size = Vector2(150, 20)
@@ -287,19 +299,45 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Dushnota"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
-text = "Душнота:"
+text = "💨 Душнота:"
 
 [node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Dushnota"]
 custom_minimum_size = Vector2(150, 20)
 layout_mode = 2
 
+[node name="Comm" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Comm"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "💬 Общение:"
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Comm"]
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+value = 100.0
+
+[node name="Conf" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/Conf"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "🤡 Уверенность:"
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/MarginContainer/VBoxContainer/Conf"]
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+value = 100.0
+
 [node name="SuperSkill" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="UI/MarginContainer/VBoxContainer/SuperSkill"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 text = "НАВЫК:"
 
@@ -323,6 +361,10 @@ text = "КОФЕ"
 layout_mode = 2
 text = "ОКНО"
 
+[node name="PetFish" type="Button" parent="UI/MarginContainer/VBoxContainer/ControlButtons"]
+layout_mode = 2
+text = "РЫБКА"
+
 [node name="KanbanBtn" type="Button" parent="UI/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
@@ -337,13 +379,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -150.0
-offset_right = 250.0
-offset_bottom = 150.0
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.180392, 0.180392, 0.180392, 0.901961)
+color = Color(0.180392, 0.180392, 0.180392, 0.941176)
 
 [node name="VBox" type="VBoxContainer" parent="UI/KanbanBoard"]
 layout_mode = 1
@@ -352,33 +394,39 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 15
+theme_override_constants/separation = 20
 alignment = 1
 
 [node name="Title" type="Label" parent="UI/KanbanBoard/VBox"]
 layout_mode = 2
-text = "ВЫБЕРИТЕ ЗАДАЧУ"
+theme_override_font_sizes/font_size = 32
+text = "КАНБАН ДОСКА (To Do)"
 horizontal_alignment = 1
 
 [node name="Task1" type="Button" parent="UI/KanbanBoard/VBox"]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-text = "Починить кнопку Васи"
+text = "📌 Починить кнопку Васи"
 
 [node name="Task2" type="Button" parent="UI/KanbanBoard/VBox"]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-text = "Удалить легаси (и уронить прод)"
+text = "📌 Удалить легаси (и уронить прод)"
 
 [node name="Task3" type="Button" parent="UI/KanbanBoard/VBox"]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-text = "Созвон на 3 часа без повестки"
+text = "📌 Созвон на 3 часа без повестки"
 
 [node name="Close" type="Button" parent="UI/KanbanBoard/VBox"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "ЗАКРЫТЬ"
 
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/ControlButtons/Eat" to="." method="_on_eat_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/ControlButtons/Drink" to="." method="_on_drink_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/ControlButtons/Vent" to="." method="_on_vent_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/ControlButtons/PetFish" to="." method="_on_pet_fish_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/KanbanBtn" to="." method="_on_open_kanban_pressed"]
 [connection signal="pressed" from="UI/KanbanBoard/VBox/Task1" to="." method="_on_task_selected" binds= ["Починить кнопку Васи"]]
 [connection signal="pressed" from="UI/KanbanBoard/VBox/Task2" to="." method="_on_task_selected" binds= ["Удалить легаси"]]
