@@ -26,6 +26,18 @@ var super_skill_ready: bool = false
 @onready var eye_l = $EyeL
 @onready var eye_r = $EyeR
 @onready var fart_particles = $FartParticles
+@onready var event_label = $EventLabel
+
+func show_event_text(text: String, duration: float = 2.0):
+	if event_label:
+		event_label.text = text
+		event_label.modulate = Color(1, 1, 1, 1) # Сброс прозрачности
+		
+		# Создаем твин для анимации исчезновения (плавное растворение)
+		var tween = create_tween()
+		tween.tween_interval(duration * 0.7) # Текст висит полностью видимым 70% времени
+		tween.tween_property(event_label, "modulate:a", 0.0, duration * 0.3) # И плавно растворяется
+		tween.tween_callback(func(): event_label.text = "")
 
 func _ready():
 	if Global.character_form == "Plankton":
@@ -117,16 +129,16 @@ func activate_super_skill():
 	super_skill_progress = 0.0
 	
 	if Global.super_skill == "Fart":
-		print("ПУУУК! Газовая атака!")
+		show_event_text("ПУУУК! Газовая атака!")
 		dushnota += 50.0
 		if fart_particles:
 			fart_particles.restart()
 			fart_particles.emitting = true
 	elif Global.super_skill == "Alcoholic":
-		print("ХРРРР... Уснул.")
+		show_event_text("ХРРРР... Уснул.")
 		burnout += 40.0
 	elif Global.super_skill == "Sarcasm":
-		print("Токсичный комментарий на ревью.")
+		show_event_text("Токсичный комментарий на ревью.")
 		burnout += 20.0
 		dushnota += 20.0
 
@@ -136,7 +148,7 @@ func complete_task():
 	current_task_name = ""
 	task_progress = 0.0
 	is_working = false
-	print("Задача выполнена!")
+	show_event_text("Задача выполнена!")
 
 func update_visuals():
 	var wobble = 0.0
@@ -176,9 +188,12 @@ func start_task(task_name: String):
 
 func eat():
 	hunger = 100.0
+	show_event_text("Ням-ням!")
 
 func drink():
 	burnout = max(0, burnout - 50.0)
+	show_event_text("Глоток кофе...")
 
 func vent():
 	dushnota = 0.0
+	show_event_text("Свежий воздух!")
